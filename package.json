@@ -5,7 +5,7 @@
   "description": "MCP server for x402 Engine — pay-per-call AI APIs via HTTP 402 micropayments",
   "main": "./dist/index.js",
   "bin": {
-    "x402engine-mcp": "./dist/index.js"
+    "x402engine-mcp": "dist/index.js"
   },
   "files": [
     "dist",
@@ -33,7 +33,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/agentc22/x402engine-mcp"
+    "url": "git+https://github.com/agentc22/x402engine-mcp.git"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.1",
