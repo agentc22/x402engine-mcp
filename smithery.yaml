@@ -1,0 +1,26 @@
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    properties:
+      X402_BASE_URL:
+        type: string
+        description: "Gateway URL (default: https://x402engine.app)"
+        default: "https://x402engine.app"
+      X402_DEV_BYPASS:
+        type: string
+        description: "Dev bypass secret to skip payments during testing"
+      X402_PAYMENT_HEADER:
+        type: string
+        description: "Pre-signed x402 payment header for automatic payment"
+  commandFunction:
+    |-
+    (config) => ({
+      command: 'npx',
+      args: ['-y', 'x402engine-mcp'],
+      env: {
+        X402_BASE_URL: config.X402_BASE_URL || 'https://x402engine.app',
+        ...(config.X402_DEV_BYPASS ? { X402_DEV_BYPASS: config.X402_DEV_BYPASS } : {}),
+        ...(config.X402_PAYMENT_HEADER ? { X402_PAYMENT_HEADER: config.X402_PAYMENT_HEADER } : {})
+      }
+    })
