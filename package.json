@@ -1,6 +1,6 @@
 {
   "name": "x402engine-mcp",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "description": "MCP server for x402 Engine — pay-per-call AI APIs via HTTP 402 micropayments",
   "main": "./dist/index.js",
@@ -29,6 +29,7 @@
     "api-gateway",
     "pay-per-call"
   ],
+  "mcpName": "io.github.agentc22/x402engine-mcp",
   "author": "agentc22",
   "license": "MIT",
   "repository": {

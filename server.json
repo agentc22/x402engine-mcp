@@ -1,22 +1,20 @@
 {
-  "$schema": "https://registry.modelcontextprotocol.io/schemas/server.json",
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.agentc22/x402engine-mcp",
-  "title": "x402 Engine",
-  "description": "Pay-per-call AI APIs for agents: image generation, code execution, transcription, crypto data, blockchain analytics, and IPFS storage. Payments via USDC on Base/Solana or USDm on MegaETH using the HTTP 402 protocol.",
-  "version": "1.0.0",
-  "websiteUrl": "https://x402engine.app",
+  "description": "Pay-per-call AI APIs for agents via HTTP 402 crypto micropayments (USDC/USDm)",
   "repository": {
     "url": "https://github.com/agentc22/x402engine-mcp",
     "source": "github"
   },
+  "version": "1.0.1",
   "packages": [
     {
       "registryType": "npm",
-      "registryBaseUrl": "https://registry.npmjs.org",
       "identifier": "x402engine-mcp",
-      "version": "1.0.0",
-      "transport": { "type": "stdio" },
-      "runtimeHint": "npx",
+      "version": "1.0.1",
+      "transport": {
+        "type": "stdio"
+      },
       "environmentVariables": [
         {
           "name": "X402_BASE_URL",
@@ -38,11 +36,5 @@
         }
       ]
     }
-  ],
-  "_meta": {
-    "io.modelcontextprotocol.registry/publisher-provided": {
-      "tags": ["crypto", "payments", "ai-agents", "micropayments", "usdc", "api-gateway", "x402", "ipfs", "blockchain", "image-generation"],
-      "author": "agentc22"
-    }
-  }
+  ]
 }
