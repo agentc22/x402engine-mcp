@@ -1,0 +1,47 @@
+{
+  "name": "x402engine-mcp",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "MCP server for x402 Engine — pay-per-call AI APIs via HTTP 402 micropayments",
+  "main": "./dist/index.js",
+  "bin": {
+    "x402engine-mcp": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "server.json"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "x402",
+    "micropayments",
+    "ai-agents",
+    "crypto",
+    "usdc",
+    "api-gateway",
+    "pay-per-call"
+  ],
+  "author": "agentc22",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/agentc22/x402engine-mcp"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}
