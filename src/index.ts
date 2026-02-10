@@ -3,7 +3,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 
-const BASE_URL = process.env.X402_BASE_URL || "https://x402engine.app";
+const BASE_URL = process.env.X402_BASE_URL || "https://x402-gateway-production.up.railway.app";
 const PAYMENT_HEADER = process.env.X402_PAYMENT_HEADER || "";
 const DEV_BYPASS = process.env.X402_DEV_BYPASS || "";
 
@@ -84,8 +84,9 @@ function textResult(content: unknown): { content: Array<{ type: "text"; text: st
   };
 }
 
-// --- Server ---
+// --- Server factory ---
 
+function createServer(): McpServer {
 const server = new McpServer({
   name: "x402engine",
   version: "1.0.0",
@@ -394,14 +395,27 @@ server.resource(
   }),
 );
 
-// --- Start ---
-
-async function main() {
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
+return server;
 }
 
-main().catch((err) => {
-  console.error("Fatal:", err);
-  process.exit(1);
-});
+// --- Smithery sandbox support ---
+
+export function createSandboxServer() {
+  return createServer();
+}
+
+// --- Start (only when run directly, not when imported) ---
+
+const isDirectRun = process.argv[1] && (
+  process.argv[1].endsWith("/index.js") ||
+  process.argv[1].endsWith("/index.ts")
+);
+
+if (isDirectRun) {
+  const server = createServer();
+  const transport = new StdioServerTransport();
+  server.connect(transport).catch((err) => {
+    console.error("Fatal:", err);
+    process.exit(1);
+  });
+}

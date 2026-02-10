@@ -1,0 +1,513 @@
+{
+  "type": "hosted",
+  "stateful": false,
+  "serverCard": {
+    "serverInfo": {
+      "name": "x402engine",
+      "version": "1.0.0"
+    },
+    "tools": [
+      {
+        "name": "discover_services",
+        "description": "List all available x402 Engine APIs with pricing, endpoints, and payment networks. Call this first to understand what's available.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {},
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        }
+      },
+      {
+        "name": "generate_image",
+        "description": "Generate an image from a text prompt. Three quality tiers: 'fast' ($0.015, FLUX Schnell), 'quality' ($0.05, FLUX.2 Pro), 'text' ($0.12, Ideogram v3 for images with text). Returns image URL.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "prompt": {
+              "type": "string",
+              "description": "Text description of the image to generate"
+            },
+            "tier": {
+              "type": "string",
+              "enum": [
+                "fast",
+                "quality",
+                "text"
+              ],
+              "default": "fast",
+              "description": "Quality tier: fast ($0.015), quality ($0.05), text ($0.12)"
+            },
+            "width": {
+              "type": "number",
+              "minimum": 256,
+              "maximum": 2048,
+              "default": 1024,
+              "description": "Image width in pixels"
+            },
+            "height": {
+              "type": "number",
+              "minimum": 256,
+              "maximum": 2048,
+              "default": 1024,
+              "description": "Image height in pixels"
+            },
+            "seed": {
+              "type": "number",
+              "description": "Random seed for reproducibility"
+            }
+          },
+          "required": [
+            "prompt"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        }
+      },
+      {
+        "name": "execute_code",
+        "description": "Execute code in a secure sandboxed environment (E2B). Supports Python, JavaScript, Bash, and R. $0.005 per execution.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string",
+              "description": "Code to execute"
+            },
+            "language": {
+              "type": "string",
+              "enum": [
+                "python",
+                "javascript",
+                "bash",
+                "r"
+              ],
+              "default": "python",
+              "description": "Programming language"
+            },
+            "timeout": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 300,
+              "description": "Execution timeout in seconds"
+            }
+          },
+          "required": [
+            "code"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        }
+      },
+      {
+        "name": "transcribe_audio",
+        "description": "Transcribe audio to text using Deepgram Nova-3. Accepts a public URL to an audio file. $0.10 per transcription.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "audio_url": {
+              "type": "string",
+              "format": "uri",
+              "description": "Public URL to audio file (mp3, wav, etc.)"
+            },
+            "language": {
+              "type": "string",
+              "description": "Language code (e.g., 'en', 'es')"
+            },
+            "diarize": {
+              "type": "boolean",
+              "default": false,
+              "description": "Enable speaker identification"
+            },
+            "punctuate": {
+              "type": "boolean",
+              "default": true,
+              "description": "Add punctuation"
+            }
+          },
+          "required": [
+            "audio_url"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        }
+      },
+      {
+        "name": "get_crypto_price",
+        "description": "Get current prices for cryptocurrencies. $0.001 per request.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "ids": {
+              "type": "string",
+              "description": "Comma-separated coin IDs (e.g., 'bitcoin,ethereum,solana')"
+            },
+            "currencies": {
+              "type": "string",
+              "default": "usd",
+              "description": "Comma-separated fiat currencies (default: 'usd')"
+            },
+            "include_24h": {
+              "type": "boolean",
+              "default": true,
+              "description": "Include 24h price change"
+            },
+            "include_mcap": {
+              "type": "boolean",
+              "default": false,
+              "description": "Include market cap"
+            }
+          },
+          "required": [
+            "ids"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        }
+      },
+      {
+        "name": "get_crypto_markets",
+        "description": "Get top cryptocurrencies by market cap with detailed market data. $0.002 per request.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "currency": {
+              "type": "string",
+              "default": "usd",
+              "description": "Fiat currency for prices"
+            },
+            "category": {
+              "type": "string",
+              "description": "Filter by category"
+            },
+            "order": {
+              "type": "string",
+              "default": "market_cap_desc",
+              "description": "Sort order"
+            },
+            "limit": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 250,
+              "default": 20,
+              "description": "Number of results"
+            },
+            "page": {
+              "type": "number",
+              "minimum": 1,
+              "default": 1,
+              "description": "Page number"
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        }
+      },
+      {
+        "name": "get_crypto_history",
+        "description": "Get historical price data for a cryptocurrency. $0.003 per request.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "Coin ID (e.g., 'bitcoin')"
+            },
+            "currency": {
+              "type": "string",
+              "default": "usd",
+              "description": "Fiat currency"
+            },
+            "days": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 1,
+                  "maximum": 365
+                },
+                {
+                  "type": "string",
+                  "const": "max"
+                }
+              ],
+              "default": 30,
+              "description": "Number of days of history (or 'max')"
+            }
+          },
+          "required": [
+            "id"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        }
+      },
+      {
+        "name": "get_trending_crypto",
+        "description": "Get trending cryptocurrencies. $0.001 per request.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {},
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        }
+      },
+      {
+        "name": "search_crypto",
+        "description": "Search for a cryptocurrency by name or symbol. $0.001 per request.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "q": {
+              "type": "string",
+              "description": "Search query (coin name or symbol)"
+            }
+          },
+          "required": [
+            "q"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        }
+      },
+      {
+        "name": "get_wallet_balances",
+        "description": "Get token balances for a wallet address on any supported chain. $0.005 per request.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "chain": {
+              "type": "string",
+              "description": "Blockchain name (e.g., 'ethereum', 'base', 'solana', 'arbitrum')"
+            },
+            "address": {
+              "type": "string",
+              "description": "Wallet address"
+            }
+          },
+          "required": [
+            "chain",
+            "address"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        }
+      },
+      {
+        "name": "get_wallet_transactions",
+        "description": "Get transaction history for a wallet address. $0.005 per request.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "chain": {
+              "type": "string",
+              "description": "Blockchain name"
+            },
+            "address": {
+              "type": "string",
+              "description": "Wallet address"
+            }
+          },
+          "required": [
+            "chain",
+            "address"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        }
+      },
+      {
+        "name": "get_wallet_pnl",
+        "description": "Get profit and loss analysis for a wallet's token trades. $0.01 per request.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "chain": {
+              "type": "string",
+              "description": "Blockchain name"
+            },
+            "address": {
+              "type": "string",
+              "description": "Wallet address"
+            },
+            "min_liquidity": {
+              "type": "number",
+              "description": "Minimum liquidity filter"
+            },
+            "min_volume_24h": {
+              "type": "number",
+              "description": "Minimum 24h volume filter"
+            }
+          },
+          "required": [
+            "chain",
+            "address"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        }
+      },
+      {
+        "name": "get_token_prices",
+        "description": "Get DEX-derived prices for tokens by contract address. $0.005 per request.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "tokens": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "token_address": {
+                    "type": "string",
+                    "description": "Token contract address"
+                  },
+                  "chain": {
+                    "type": "string",
+                    "description": "Blockchain name"
+                  }
+                },
+                "required": [
+                  "token_address",
+                  "chain"
+                ],
+                "additionalProperties": false
+              },
+              "minItems": 1,
+              "maxItems": 200,
+              "description": "Array of tokens to price"
+            }
+          },
+          "required": [
+            "tokens"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        }
+      },
+      {
+        "name": "get_token_metadata",
+        "description": "Get metadata for a token (name, symbol, decimals, etc.). $0.002 per request.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "chain": {
+              "type": "string",
+              "description": "Blockchain name (required with address)"
+            },
+            "address": {
+              "type": "string",
+              "description": "Token contract address"
+            },
+            "slug": {
+              "type": "string",
+              "description": "Token slug (alternative to chain+address)"
+            },
+            "id": {
+              "type": "string",
+              "description": "Token ID (alternative to chain+address)"
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        }
+      },
+      {
+        "name": "pin_to_ipfs",
+        "description": "Pin JSON data to IPFS via Pinata. Returns the IPFS CID. $0.01 per pin.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "json": {
+              "type": "object",
+              "additionalProperties": {},
+              "description": "JSON object to pin to IPFS"
+            },
+            "name": {
+              "type": "string",
+              "description": "Name for the pinned content"
+            }
+          },
+          "required": [
+            "json"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        }
+      },
+      {
+        "name": "get_from_ipfs",
+        "description": "Retrieve content from IPFS by CID. $0.001 per request.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "cid": {
+              "type": "string",
+              "description": "IPFS content identifier (CID)"
+            }
+          },
+          "required": [
+            "cid"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        }
+      }
+    ],
+    "resources": [
+      {
+        "name": "services",
+        "uri": "x402engine://services"
+      }
+    ],
+    "prompts": []
+  },
+  "source": {
+    "commit": "85470f2aad83bea13a9dbf7ae3fb4412273280e2",
+    "branch": "main"
+  }
+}

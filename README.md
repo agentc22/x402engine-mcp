@@ -1,6 +1,6 @@
 # x402engine-mcp
 
-MCP server for [x402 Engine](https://x402engine.app) — giving AI agents access to 16 pay-per-call APIs via HTTP 402 micropayments.
+MCP server for [x402 Engine](https://x402-gateway-production.up.railway.app) — giving AI agents access to 16 pay-per-call APIs via HTTP 402 micropayments.
 
 Payments are made with USDC on Base, USDC on Solana, or USDm on MegaETH. Prices range from $0.001 to $0.12 per call.
 
@@ -80,7 +80,7 @@ claude mcp add x402engine -- npx -y x402engine-mcp
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `X402_BASE_URL` | No | Gateway URL (default: `https://x402engine.app`) |
+| `X402_BASE_URL` | No | Gateway URL (default: `https://x402-gateway-production.up.railway.app`) |
 | `X402_DEV_BYPASS` | No | Dev bypass secret to skip payments |
 | `X402_PAYMENT_HEADER` | No | Pre-signed payment header |
 
@@ -102,7 +102,7 @@ For automatic payment handling, use [@x402/fetch](https://www.npmjs.com/package/
 
 ## Links
 
-- Gateway: [x402engine.app](https://x402engine.app)
-- Discovery: [x402engine.app/.well-known/x402.json](https://x402engine.app/.well-known/x402.json)
+- Gateway: [x402engine.app](https://x402-gateway-production.up.railway.app)
+- Discovery: [x402engine.app/.well-known/x402.json](https://x402-gateway-production.up.railway.app/.well-known/x402.json)
 - GitHub: [github.com/agentc22/x402engine-mcp](https://github.com/agentc22/x402engine-mcp)
 - Protocol: [x402.org](https://x402.org)

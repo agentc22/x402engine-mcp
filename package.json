@@ -1,9 +1,10 @@
 {
   "name": "x402engine-mcp",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "type": "module",
   "description": "MCP server for x402 Engine — pay-per-call AI APIs via HTTP 402 micropayments",
   "main": "./dist/index.js",
+  "module": "./src/index.ts",
   "bin": {
     "x402engine-mcp": "dist/index.js"
   },
