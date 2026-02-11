@@ -1,6 +1,6 @@
 {
-  "type": "hosted",
-  "stateful": false,
+  "type": "stdio",
+  "runtime": "node",
   "hasAuthAdapter": false,
   "serverCard": {
     "serverInfo": {

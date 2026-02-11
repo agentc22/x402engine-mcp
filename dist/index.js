@@ -262,6 +262,81 @@ function createServer() {
             return textResult({ error: res.error, paymentRequired: res.paymentRequired });
         return textResult(res.data);
     });
+    // ==================== TRAVEL ====================
+    server.tool("search_flights", "Search flight offers by route, dates, and passengers. Returns pricing, itineraries, and airlines. $0.01 per request.", {
+        origin: z.string().describe("Origin airport IATA code (e.g., 'JFK')"),
+        destination: z.string().describe("Destination airport IATA code (e.g., 'LAX')"),
+        departureDate: z.string().describe("Departure date in YYYY-MM-DD format"),
+        adults: z.number().min(1).max(9).default(1).optional().describe("Number of adult passengers"),
+        returnDate: z.string().optional().describe("Return date in YYYY-MM-DD format (for round trips)"),
+        max: z.number().min(1).max(50).default(10).optional().describe("Maximum number of offers to return"),
+        nonStop: z.boolean().default(false).optional().describe("Only show non-stop flights"),
+        currencyCode: z.string().optional().describe("Currency code for prices (e.g., 'USD', 'EUR')"),
+    }, async ({ origin, destination, departureDate, adults, returnDate, max, nonStop, currencyCode }) => {
+        const params = { origin, destination, departureDate };
+        if (adults)
+            params.adults = adults;
+        if (returnDate)
+            params.returnDate = returnDate;
+        if (max)
+            params.max = max;
+        if (nonStop)
+            params.nonStop = nonStop;
+        if (currencyCode)
+            params.currencyCode = currencyCode;
+        const res = await callApi("GET", "/api/travel/flights", params);
+        if (res.error)
+            return textResult({ error: res.error, paymentRequired: res.paymentRequired });
+        return textResult(res.data);
+    });
+    server.tool("search_locations", "Search for airports and cities by keyword. Returns IATA codes, names, and coordinates. $0.005 per request.", {
+        keyword: z.string().min(2).describe("Search keyword (e.g., 'London', 'JFK', 'Paris')"),
+        subType: z.string().default("AIRPORT,CITY").optional().describe("Location type filter: AIRPORT, CITY, or both"),
+    }, async ({ keyword, subType }) => {
+        const res = await callApi("GET", "/api/travel/locations", { keyword, subType });
+        if (res.error)
+            return textResult({ error: res.error, paymentRequired: res.paymentRequired });
+        return textResult(res.data);
+    });
+    server.tool("search_hotels", "Search hotel offers by city and dates. Returns room details, pricing, and availability. $0.01 per request.", {
+        cityCode: z.string().describe("City IATA code (e.g., 'PAR' for Paris, 'LON' for London)"),
+        checkInDate: z.string().describe("Check-in date in YYYY-MM-DD format"),
+        checkOutDate: z.string().describe("Check-out date in YYYY-MM-DD format"),
+        adults: z.number().min(1).max(9).default(1).optional().describe("Number of adult guests per room"),
+        roomQuantity: z.number().min(1).max(9).default(1).optional().describe("Number of rooms"),
+        priceRange: z.string().optional().describe("Price range filter (e.g., '100-200')"),
+        currency: z.string().optional().describe("Currency code for prices (e.g., 'USD')"),
+    }, async ({ cityCode, checkInDate, checkOutDate, adults, roomQuantity, priceRange, currency }) => {
+        const params = { cityCode, checkInDate, checkOutDate };
+        if (adults)
+            params.adults = adults;
+        if (roomQuantity)
+            params.roomQuantity = roomQuantity;
+        if (priceRange)
+            params.priceRange = priceRange;
+        if (currency)
+            params.currency = currency;
+        const res = await callApi("GET", "/api/travel/hotels", params);
+        if (res.error)
+            return textResult({ error: res.error, paymentRequired: res.paymentRequired });
+        return textResult(res.data);
+    });
+    server.tool("search_cheapest_dates", "Find the cheapest travel dates for a route. Returns date/price pairs sorted by price. $0.01 per request.", {
+        origin: z.string().describe("Origin airport IATA code (e.g., 'JFK')"),
+        destination: z.string().describe("Destination airport IATA code (e.g., 'LAX')"),
+        departureDate: z.string().optional().describe("Approximate departure date in YYYY-MM-DD format"),
+        oneWay: z.boolean().default(false).optional().describe("Search one-way flights only"),
+    }, async ({ origin, destination, departureDate, oneWay }) => {
+        const params = { origin, destination };
+        if (departureDate)
+            params.departureDate = departureDate;
+        if (oneWay)
+            params.oneWay = oneWay;
+        const res = await callApi("GET", "/api/travel/cheapest-dates", params);
+        if (res.error)
+            return textResult({ error: res.error, paymentRequired: res.paymentRequired });
+        return textResult(res.data);
+    });
     // ==================== RESOURCES ====================
     server.resource("services", "x402engine://services", async (uri) => ({
         contents: [{
@@ -285,6 +360,10 @@ function createServer() {
                         { tool: "get_token_metadata", price: "$0.002", description: "Token metadata" },
                         { tool: "pin_to_ipfs", price: "$0.01", description: "Pin to IPFS" },
                         { tool: "get_from_ipfs", price: "$0.001", description: "Get from IPFS" },
+                        { tool: "search_flights", price: "$0.01", description: "Flight search" },
+                        { tool: "search_locations", price: "$0.005", description: "Airport & city search" },
+                        { tool: "search_hotels", price: "$0.01", description: "Hotel search" },
+                        { tool: "search_cheapest_dates", price: "$0.01", description: "Cheapest travel dates" },
                     ],
                     networks: ["Base (USDC)", "Solana (USDC)", "MegaETH (USDm)"],
                     docs: `${BASE_URL}/.well-known/x402.json`,

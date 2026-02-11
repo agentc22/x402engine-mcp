@@ -1,0 +1,112 @@
+{
+  "manifest_version": "0.2",
+  "name": "x402engine",
+  "version": "1.0.0",
+  "description": "MCP Server",
+  "author": {
+    "name": "agentc22"
+  },
+  "server": {
+    "type": "node",
+    "entry_point": "index.cjs",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/index.cjs"
+      ],
+      "env": {}
+    }
+  },
+  "tools": [
+    {
+      "name": "discover_services",
+      "description": "List all available x402 Engine APIs with pricing, endpoints, and payment networks. Call this first to understand what's available."
+    },
+    {
+      "name": "generate_image",
+      "description": "Generate an image from a text prompt. Three quality tiers: 'fast' ($0.015, FLUX Schnell), 'quality' ($0.05, FLUX.2 Pro), 'text' ($0.12, Ideogram v3 for images with text). Returns image URL."
+    },
+    {
+      "name": "execute_code",
+      "description": "Execute code in a secure sandboxed environment (E2B). Supports Python, JavaScript, Bash, and R. $0.005 per execution."
+    },
+    {
+      "name": "transcribe_audio",
+      "description": "Transcribe audio to text using Deepgram Nova-3. Accepts a public URL to an audio file. $0.10 per transcription."
+    },
+    {
+      "name": "get_crypto_price",
+      "description": "Get current prices for cryptocurrencies. $0.001 per request."
+    },
+    {
+      "name": "get_crypto_markets",
+      "description": "Get top cryptocurrencies by market cap with detailed market data. $0.002 per request."
+    },
+    {
+      "name": "get_crypto_history",
+      "description": "Get historical price data for a cryptocurrency. $0.003 per request."
+    },
+    {
+      "name": "get_trending_crypto",
+      "description": "Get trending cryptocurrencies. $0.001 per request."
+    },
+    {
+      "name": "search_crypto",
+      "description": "Search for a cryptocurrency by name or symbol. $0.001 per request."
+    },
+    {
+      "name": "get_wallet_balances",
+      "description": "Get token balances for a wallet address on any supported chain. $0.005 per request."
+    },
+    {
+      "name": "get_wallet_transactions",
+      "description": "Get transaction history for a wallet address. $0.005 per request."
+    },
+    {
+      "name": "get_wallet_pnl",
+      "description": "Get profit and loss analysis for a wallet's token trades. $0.01 per request."
+    },
+    {
+      "name": "get_token_prices",
+      "description": "Get DEX-derived prices for tokens by contract address. $0.005 per request."
+    },
+    {
+      "name": "get_token_metadata",
+      "description": "Get metadata for a token (name, symbol, decimals, etc.). $0.002 per request."
+    },
+    {
+      "name": "pin_to_ipfs",
+      "description": "Pin JSON data to IPFS via Pinata. Returns the IPFS CID. $0.01 per pin."
+    },
+    {
+      "name": "get_from_ipfs",
+      "description": "Retrieve content from IPFS by CID. $0.001 per request."
+    },
+    {
+      "name": "search_flights",
+      "description": "Search flight offers by route, dates, and passengers. Returns pricing, itineraries, and airlines. $0.01 per request."
+    },
+    {
+      "name": "search_locations",
+      "description": "Search for airports and cities by keyword. Returns IATA codes, names, and coordinates. $0.005 per request."
+    },
+    {
+      "name": "search_hotels",
+      "description": "Search hotel offers by city and dates. Returns room details, pricing, and availability. $0.01 per request."
+    },
+    {
+      "name": "search_cheapest_dates",
+      "description": "Find the cheapest travel dates for a route. Returns date/price pairs sorted by price. $0.01 per request."
+    }
+  ],
+  "compatibility": {
+    "platforms": [
+      "darwin",
+      "win32",
+      "linux"
+    ],
+    "runtimes": {
+      "node": ">=18.0.0"
+    }
+  }
+}
