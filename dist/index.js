@@ -32,7 +32,9 @@ async function callApi(method, path, params, body) {
     if (method === "POST" && body) {
         init.body = JSON.stringify(body);
     }
+    const start = performance.now();
     const res = await fetch(url, init);
+    const roundtrip_ms = Math.round(performance.now() - start);
     if (res.status === 402) {
         const paymentHeader = res.headers.get("PAYMENT-REQUIRED");
         let paymentInfo = null;
@@ -48,13 +50,14 @@ async function callApi(method, path, params, body) {
             status: 402,
             paymentRequired: paymentInfo,
             error: "Payment required. Set X402_PAYMENT_HEADER or X402_DEV_BYPASS env var, or use @x402/fetch to handle payments automatically.",
+            roundtrip_ms,
         };
     }
     const data = await res.json().catch(() => ({ error: "Non-JSON response" }));
     if (!res.ok) {
         return { status: res.status, error: data.error || `HTTP ${res.status}` };
     }
-    return { status: res.status, data };
+    return { status: res.status, data, roundtrip_ms };
 }
 function textResult(content) {
     return {
@@ -72,6 +75,23 @@ function createServer() {
         const res = await callApi("GET", "/.well-known/x402.json");
         if (res.error)
             return textResult({ error: res.error });
+        return textResult(res.data);
+    });
+    // ==================== HEALTH ====================
+    server.tool("service_health", "Get live health metrics for all x402engine services — latency (p50/p95/p99), error rates, request volume, and status. Free, no payment required. Call this before choosing which service to use.", {
+        service: z.string().optional().describe("Filter to a specific service ID (e.g., 'image-fast'). Omit for all services."),
+    }, async ({ service }) => {
+        const res = await callApi("GET", "/api/health/services");
+        if (res.error)
+            return textResult({ error: res.error });
+        const data = res.data;
+        if (service && data?.services) {
+            const services = data.services;
+            const svc = services[service];
+            if (!svc)
+                return textResult({ error: `Unknown service: ${service}` });
+            return textResult({ [service]: svc });
+        }
         return textResult(res.data);
     });
     // ==================== IMAGE GENERATION ====================
@@ -338,38 +358,49 @@ function createServer() {
         return textResult(res.data);
     });
     // ==================== RESOURCES ====================
-    server.resource("services", "x402engine://services", async (uri) => ({
-        contents: [{
-                uri: uri.href,
-                mimeType: "application/json",
-                text: JSON.stringify({
-                    gateway: BASE_URL,
-                    services: [
-                        { tool: "generate_image", price: "$0.015-$0.12", description: "AI image generation (3 tiers)" },
-                        { tool: "execute_code", price: "$0.005", description: "Sandboxed code execution" },
-                        { tool: "transcribe_audio", price: "$0.10", description: "Audio transcription" },
-                        { tool: "get_crypto_price", price: "$0.001", description: "Crypto prices" },
-                        { tool: "get_crypto_markets", price: "$0.002", description: "Market data" },
-                        { tool: "get_crypto_history", price: "$0.003", description: "Historical prices" },
-                        { tool: "get_trending_crypto", price: "$0.001", description: "Trending coins" },
-                        { tool: "search_crypto", price: "$0.001", description: "Coin search" },
-                        { tool: "get_wallet_balances", price: "$0.005", description: "Wallet balances" },
-                        { tool: "get_wallet_transactions", price: "$0.005", description: "Transaction history" },
-                        { tool: "get_wallet_pnl", price: "$0.01", description: "P&L analysis" },
-                        { tool: "get_token_prices", price: "$0.005", description: "DEX token prices" },
-                        { tool: "get_token_metadata", price: "$0.002", description: "Token metadata" },
-                        { tool: "pin_to_ipfs", price: "$0.01", description: "Pin to IPFS" },
-                        { tool: "get_from_ipfs", price: "$0.001", description: "Get from IPFS" },
-                        { tool: "search_flights", price: "$0.01", description: "Flight search" },
-                        { tool: "search_locations", price: "$0.005", description: "Airport & city search" },
-                        { tool: "search_hotels", price: "$0.01", description: "Hotel search" },
-                        { tool: "search_cheapest_dates", price: "$0.01", description: "Cheapest travel dates" },
-                    ],
-                    networks: ["Base (USDC)", "Solana (USDC)", "MegaETH (USDm)"],
-                    docs: `${BASE_URL}/.well-known/x402.json`,
-                }, null, 2),
-            }],
-    }));
+    server.resource("services", "x402engine://services", async (uri) => {
+        // Fetch live health alongside static catalog
+        const healthRes = await callApi("GET", "/api/health/services").catch(() => null);
+        const healthData = (healthRes?.data ?? null);
+        const healthMap = healthData?.services ?? {};
+        const staticServices = [
+            { tool: "generate_image", price: "$0.015-$0.12", description: "AI image generation (3 tiers)" },
+            { tool: "execute_code", price: "$0.005", description: "Sandboxed code execution" },
+            { tool: "transcribe_audio", price: "$0.10", description: "Audio transcription" },
+            { tool: "get_crypto_price", price: "$0.001", description: "Crypto prices" },
+            { tool: "get_crypto_markets", price: "$0.002", description: "Market data" },
+            { tool: "get_crypto_history", price: "$0.003", description: "Historical prices" },
+            { tool: "get_trending_crypto", price: "$0.001", description: "Trending coins" },
+            { tool: "search_crypto", price: "$0.001", description: "Coin search" },
+            { tool: "get_wallet_balances", price: "$0.005", description: "Wallet balances" },
+            { tool: "get_wallet_transactions", price: "$0.005", description: "Transaction history" },
+            { tool: "get_wallet_pnl", price: "$0.01", description: "P&L analysis" },
+            { tool: "get_token_prices", price: "$0.005", description: "DEX token prices" },
+            { tool: "get_token_metadata", price: "$0.002", description: "Token metadata" },
+            { tool: "pin_to_ipfs", price: "$0.01", description: "Pin to IPFS" },
+            { tool: "get_from_ipfs", price: "$0.001", description: "Get from IPFS" },
+            { tool: "search_flights", price: "$0.01", description: "Flight search" },
+            { tool: "search_locations", price: "$0.005", description: "Airport & city search" },
+            { tool: "search_hotels", price: "$0.01", description: "Hotel search" },
+            { tool: "search_cheapest_dates", price: "$0.01", description: "Cheapest travel dates" },
+        ];
+        const services = staticServices.map(s => ({
+            ...s,
+            health: healthMap[s.tool] ?? null,
+        }));
+        return {
+            contents: [{
+                    uri: uri.href,
+                    mimeType: "application/json",
+                    text: JSON.stringify({
+                        gateway: BASE_URL,
+                        services,
+                        networks: ["Base (USDC)", "Solana (USDC)", "MegaETH (USDm)"],
+                        docs: `${BASE_URL}/.well-known/x402.json`,
+                    }, null, 2),
+                }],
+        };
+    });
     return server;
 }
 // --- Smithery sandbox support ---
