@@ -383,6 +383,14 @@ function createServer() {
             { tool: "search_locations", price: "$0.005", description: "Airport & city search" },
             { tool: "search_hotels", price: "$0.01", description: "Hotel search" },
             { tool: "search_cheapest_dates", price: "$0.01", description: "Cheapest travel dates" },
+            { tool: "llm/gpt-5.4", price: "$0.10", description: "GPT-5.4 — unified flagship, 1M context" },
+            { tool: "llm/gpt-5.4-pro", price: "$0.30", description: "GPT-5.4 Pro — max reasoning tier" },
+            { tool: "llm/gpt-5.3-codex", price: "$0.08", description: "GPT-5.3 Codex — SOTA agentic coding" },
+            { tool: "llm/claude-opus-4.5", price: "$0.09", description: "Claude Opus 4.5 — previous-gen Opus" },
+            { tool: "llm/gemini-3.1-pro", price: "$0.05", description: "Gemini 3.1 Pro — latest Google flagship" },
+            { tool: "llm/gemini-3.1-flash-lite", price: "$0.003", description: "Gemini 3.1 Flash Lite — fastest Google" },
+            { tool: "llm/qwen3.5", price: "$0.006", description: "Qwen 3.5 — Alibaba latest, 1M context" },
+            { tool: "llm/deepseek-v3.2-speciale", price: "$0.008", description: "DeepSeek V3.2 Speciale — enhanced reasoning" },
         ];
         const services = staticServices.map(s => ({
             ...s,
