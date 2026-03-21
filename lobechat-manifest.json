@@ -1,0 +1,81 @@
+{
+  "$schema": "https://chat-plugins.lobehub.com/schema/lobeChatPlugin.json",
+  "api": [
+    {
+      "name": "discover_services",
+      "url": "https://x402-gateway-production.up.railway.app/.well-known/x402.json",
+      "description": "List all available x402engine APIs with pricing, endpoints, and payment networks. Call this first.",
+      "parameters": { "type": "object", "properties": {} }
+    },
+    {
+      "name": "service_health",
+      "url": "https://x402-gateway-production.up.railway.app/api/health/services",
+      "description": "Get live health metrics for all services - latency, error rates, request volume, and status.",
+      "parameters": { "type": "object", "properties": { "service": { "type": "string", "description": "Filter to a specific service ID. Omit for all." } } }
+    },
+    {
+      "name": "generate_image",
+      "url": "https://x402-gateway-production.up.railway.app/api/image/fast",
+      "description": "Generate an image from a text prompt. Tiers: fast ($0.015), quality ($0.05), text ($0.12). Returns image URL.",
+      "parameters": { "type": "object", "required": ["prompt"], "properties": { "prompt": { "type": "string", "description": "Text description of the image" }, "width": { "type": "number", "description": "Width in pixels (256-2048)" }, "height": { "type": "number", "description": "Height in pixels (256-2048)" } } }
+    },
+    {
+      "name": "execute_code",
+      "url": "https://x402-gateway-production.up.railway.app/api/code/run",
+      "description": "Execute code in a secure sandbox. Supports Python, JavaScript, Bash, R. $0.005 per execution.",
+      "parameters": { "type": "object", "required": ["code"], "properties": { "code": { "type": "string", "description": "Code to execute" }, "language": { "type": "string", "enum": ["python", "javascript", "bash", "r"], "description": "Programming language" } } }
+    },
+    {
+      "name": "get_crypto_price",
+      "url": "https://x402-gateway-production.up.railway.app/api/crypto/price",
+      "description": "Get current cryptocurrency prices. $0.001 per request.",
+      "parameters": { "type": "object", "required": ["ids"], "properties": { "ids": { "type": "string", "description": "Comma-separated coin IDs (e.g., bitcoin,ethereum)" }, "currencies": { "type": "string", "description": "Fiat currencies (default: usd)" } } }
+    },
+    {
+      "name": "get_wallet_balances",
+      "url": "https://x402-gateway-production.up.railway.app/api/wallet/balances",
+      "description": "Get token balances for a wallet on any supported chain. $0.005 per request.",
+      "parameters": { "type": "object", "required": ["chain", "address"], "properties": { "chain": { "type": "string", "description": "Blockchain name (ethereum, base, solana)" }, "address": { "type": "string", "description": "Wallet address" } } }
+    },
+    {
+      "name": "search_flights",
+      "url": "https://x402-gateway-production.up.railway.app/api/travel/flights",
+      "description": "Search flight offers by route and dates. $0.01 per request.",
+      "parameters": { "type": "object", "required": ["origin", "destination", "departureDate"], "properties": { "origin": { "type": "string", "description": "Origin IATA code (e.g., JFK)" }, "destination": { "type": "string", "description": "Destination IATA code (e.g., LAX)" }, "departureDate": { "type": "string", "description": "Departure date (YYYY-MM-DD)" } } }
+    },
+    {
+      "name": "pin_to_ipfs",
+      "url": "https://x402-gateway-production.up.railway.app/api/ipfs/pin",
+      "description": "Pin JSON data to IPFS. Returns the CID. $0.01 per pin.",
+      "parameters": { "type": "object", "required": ["json"], "properties": { "json": { "type": "object", "description": "JSON object to pin" }, "name": { "type": "string", "description": "Name for the content" } } }
+    },
+    {
+      "name": "transcribe_audio",
+      "url": "https://x402-gateway-production.up.railway.app/api/transcribe",
+      "description": "Transcribe audio to text using Deepgram Nova-3. $0.10 per transcription.",
+      "parameters": { "type": "object", "required": ["audio_url"], "properties": { "audio_url": { "type": "string", "description": "Public URL to audio file" }, "language": { "type": "string", "description": "Language code (e.g., en, es)" } } }
+    }
+  ],
+  "author": "agentc22",
+  "createdAt": "2025-06-01",
+  "homepage": "https://x402engine.app",
+  "identifier": "x402engine-mcp",
+  "meta": {
+    "avatar": "⚡",
+    "tags": ["api", "micropayments", "ai", "crypto", "image-generation", "code-execution"],
+    "title": "x402engine",
+    "description": "74 pay-per-call APIs for AI agents via HTTP 402 micropayments. 44 LLMs, image/video generation, crypto data, wallet analytics, web search, code execution, TTS, IPFS, and travel."
+  },
+  "settings": {
+    "type": "object",
+    "properties": {
+      "X402_PAYMENT_HEADER": {
+        "title": "x402 Payment Header",
+        "description": "Pre-signed x402 payment header for automatic micropayments. Get one at https://x402engine.app",
+        "type": "string",
+        "format": "password"
+      }
+    }
+  },
+  "version": "1"
+}
