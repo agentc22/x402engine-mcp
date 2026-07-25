@@ -2,8 +2,8 @@
   "manifest_version": "0.2",
   "name": "x402engine-mcp",
   "display_name": "x402engine",
-  "version": "1.0.4",
-  "description": "MCP server connecting agents to 108 x402 pay-per-call APIs: 72 LLMs plus media, web, code, crypto, audio, travel, and IPFS",
+  "version": "1.1.0",
+  "description": "Agent-friendly x402engine MCP server with automatic capped USDC payments on Base and Solana",
   "author": {
     "name": "agentc22",
     "url": "https://github.com/agentc22"
@@ -18,6 +18,10 @@
       ],
       "env": {
         "X402_BASE_URL": "${user_config.base_url}",
+        "X402_EVM_PRIVATE_KEY": "${user_config.evm_private_key}",
+        "X402_SOLANA_PRIVATE_KEY": "${user_config.solana_private_key}",
+        "X402_PAYMENT_NETWORK": "${user_config.payment_network}",
+        "X402_MAX_PAYMENT_USD": "${user_config.max_payment_usd}",
         "X402_PAYMENT_HEADER": "${user_config.payment_header}",
         "X402_DEV_BYPASS": "${user_config.dev_bypass}"
       }
@@ -28,13 +32,41 @@
       "type": "string",
       "title": "Gateway URL",
       "description": "x402engine gateway URL",
-      "default": "https://x402engine.app",
+      "default": "https://x402-gateway-production.up.railway.app",
+      "required": false
+    },
+    "evm_private_key": {
+      "type": "string",
+      "title": "Base payer private key",
+      "description": "Optional 0x-prefixed private key for automatic Base USDC payments",
+      "sensitive": true,
+      "required": false
+    },
+    "solana_private_key": {
+      "type": "string",
+      "title": "Solana payer private key",
+      "description": "Optional base58 or JSON private key for automatic Solana USDC payments",
+      "sensitive": true,
+      "required": false
+    },
+    "payment_network": {
+      "type": "string",
+      "title": "Payment network",
+      "description": "Automatic payment network: auto, base, or solana",
+      "default": "auto",
+      "required": false
+    },
+    "max_payment_usd": {
+      "type": "string",
+      "title": "Maximum payment per request",
+      "description": "Hard USD spending limit for each MCP tool call",
+      "default": "1.00",
       "required": false
     },
     "payment_header": {
       "type": "string",
       "title": "x402 payment header",
-      "description": "Optional pre-signed x402 payment header",
+      "description": "Optional legacy pre-signed x402 payment header",
       "sensitive": true,
       "required": false
     },

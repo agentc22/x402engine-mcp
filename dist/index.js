@@ -2,9 +2,15 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
-const BASE_URL = process.env.X402_BASE_URL || "https://x402engine.app";
+import { createPaymentFetch } from "./payment.js";
+const BASE_URL = process.env.X402_BASE_URL || "https://x402-gateway-production.up.railway.app";
 const PAYMENT_HEADER = process.env.X402_PAYMENT_HEADER || "";
 const DEV_BYPASS = process.env.X402_DEV_BYPASS || "";
+let requestFetchPromise;
+function getRequestFetch() {
+    requestFetchPromise ??= createPaymentFetch();
+    return requestFetchPromise;
+}
 async function callApi(method, path, params, body) {
     let url = `${BASE_URL}${path}`;
     // Build query string for GET
@@ -33,7 +39,18 @@ async function callApi(method, path, params, body) {
         init.body = JSON.stringify(body);
     }
     const start = performance.now();
-    const res = await fetch(url, init);
+    let res;
+    try {
+        const requestFetch = await getRequestFetch();
+        res = await requestFetch(url, init);
+    }
+    catch (error) {
+        return {
+            status: 0,
+            error: error instanceof Error ? error.message : String(error),
+            roundtrip_ms: Math.round(performance.now() - start),
+        };
+    }
     const roundtrip_ms = Math.round(performance.now() - start);
     if (res.status === 402) {
         const paymentHeader = res.headers.get("PAYMENT-REQUIRED");
@@ -49,7 +66,7 @@ async function callApi(method, path, params, body) {
         return {
             status: 402,
             paymentRequired: paymentInfo,
-            error: "Payment required. Set X402_PAYMENT_HEADER or X402_DEV_BYPASS env var, or use @x402/fetch to handle payments automatically.",
+            error: "Payment required. Configure X402_EVM_PRIVATE_KEY or X402_SOLANA_PRIVATE_KEY for automatic USDC payment.",
             roundtrip_ms,
         };
     }
@@ -68,7 +85,7 @@ function textResult(content) {
 function createServer() {
     const server = new McpServer({
         name: "x402engine",
-        version: "1.0.0",
+        version: "1.1.0",
     });
     // ==================== DISCOVERY ====================
     server.tool("discover_services", "List all available x402 Engine APIs with pricing, endpoints, and payment networks. Call this first to understand what's available.", {}, async () => {
@@ -191,6 +208,12 @@ function createServer() {
         q: z.string().describe("Search query (coin name or symbol)"),
     }, async ({ q }) => {
         const res = await callApi("GET", "/api/crypto/search", { q });
+        if (res.error)
+            return textResult({ error: res.error, paymentRequired: res.paymentRequired });
+        return textResult(res.data);
+    });
+    server.tool("get_crypto_categories", "List CoinGecko category IDs for sector discovery and downstream market filters. $0.001 per request.", {}, async () => {
+        const res = await callApi("GET", "/api/crypto/categories");
         if (res.error)
             return textResult({ error: res.error, paymentRequired: res.paymentRequired });
         return textResult(res.data);
@@ -359,52 +382,49 @@ function createServer() {
     });
     // ==================== RESOURCES ====================
     server.resource("services", "x402engine://services", async (uri) => {
-        // Fetch live health alongside static catalog
-        const healthRes = await callApi("GET", "/api/health/services").catch(() => null);
+        const [discoveryRes, servicesRes, healthRes] = await Promise.all([
+            callApi("GET", "/.well-known/x402.json").catch(() => null),
+            callApi("GET", "/api/services").catch(() => null),
+            callApi("GET", "/api/health/services").catch(() => null),
+        ]);
+        const discoveryData = (discoveryRes?.data ?? null);
+        const servicesData = (servicesRes?.data ?? null);
         const healthData = (healthRes?.data ?? null);
+        const liveServices = Array.isArray(servicesData)
+            ? servicesData
+            : Array.isArray(servicesData?.services)
+                ? servicesData.services
+                : [];
         const healthMap = healthData?.services ?? {};
-        const staticServices = [
-            { tool: "generate_image", price: "$0.015-$0.12", description: "AI image generation (3 tiers)" },
-            { tool: "execute_code", price: "$0.005", description: "Sandboxed code execution" },
-            { tool: "transcribe_audio", price: "$0.10", description: "Audio transcription" },
-            { tool: "get_crypto_price", price: "$0.001", description: "Crypto prices" },
-            { tool: "get_crypto_markets", price: "$0.002", description: "Market data" },
-            { tool: "get_crypto_history", price: "$0.003", description: "Historical prices" },
-            { tool: "get_trending_crypto", price: "$0.001", description: "Trending coins" },
-            { tool: "search_crypto", price: "$0.001", description: "Coin search" },
-            { tool: "get_wallet_balances", price: "$0.005", description: "Wallet balances" },
-            { tool: "get_wallet_transactions", price: "$0.005", description: "Transaction history" },
-            { tool: "get_wallet_pnl", price: "$0.01", description: "P&L analysis" },
-            { tool: "get_token_prices", price: "$0.005", description: "DEX token prices" },
-            { tool: "get_token_metadata", price: "$0.002", description: "Token metadata" },
-            { tool: "pin_to_ipfs", price: "$0.01", description: "Pin to IPFS" },
-            { tool: "get_from_ipfs", price: "$0.001", description: "Get from IPFS" },
-            { tool: "search_flights", price: "$0.01", description: "Flight search" },
-            { tool: "search_locations", price: "$0.005", description: "Airport & city search" },
-            { tool: "search_hotels", price: "$0.01", description: "Hotel search" },
-            { tool: "search_cheapest_dates", price: "$0.01", description: "Cheapest travel dates" },
-            { tool: "llm/gpt-5.4", price: "$0.10", description: "GPT-5.4 — unified flagship, 1M context" },
-            { tool: "llm/gpt-5.4-pro", price: "$0.30", description: "GPT-5.4 Pro — max reasoning tier" },
-            { tool: "llm/gpt-5.3-codex", price: "$0.08", description: "GPT-5.3 Codex — SOTA agentic coding" },
-            { tool: "llm/claude-opus-4.5", price: "$0.09", description: "Claude Opus 4.5 — previous-gen Opus" },
-            { tool: "llm/gemini-3.1-pro", price: "$0.05", description: "Gemini 3.1 Pro — latest Google flagship" },
-            { tool: "llm/gemini-3.1-flash-lite", price: "$0.003", description: "Gemini 3.1 Flash Lite — fastest Google" },
-            { tool: "llm/qwen3.5", price: "$0.006", description: "Qwen 3.5 — Alibaba latest, 1M context" },
-            { tool: "llm/deepseek-v3.2-speciale", price: "$0.008", description: "DeepSeek V3.2 Speciale — enhanced reasoning" },
-        ];
-        const services = staticServices.map(s => ({
-            ...s,
-            health: healthMap[s.tool] ?? null,
+        const networks = Object.entries(discoveryData?.networks ?? {}).map(([id, metadata]) => ({
+            id,
+            ...metadata,
         }));
+        const services = liveServices.map((rawService) => {
+            const service = rawService;
+            const id = typeof service.id === "string" ? service.id : "unknown";
+            return {
+                id,
+                name: typeof service.name === "string" ? service.name : id,
+                description: typeof service.description === "string" ? service.description : null,
+                category: typeof service.category === "string" ? service.category : null,
+                path: typeof service.path === "string" ? service.path : null,
+                method: typeof service.method === "string" ? service.method : null,
+                price: service.price ?? null,
+                currency: service.currency ?? "USD",
+                health: healthMap[id] ?? null,
+            };
+        });
         return {
             contents: [{
                     uri: uri.href,
                     mimeType: "application/json",
                     text: JSON.stringify({
                         gateway: BASE_URL,
-                        services,
-                        networks: ["Base (USDC)", "Solana (USDC)", "MegaETH (USDm)"],
                         docs: `${BASE_URL}/.well-known/x402.json`,
+                        service_count: services.length,
+                        networks,
+                        services,
                     }, null, 2),
                 }],
         };

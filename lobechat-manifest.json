@@ -69,13 +69,38 @@
   "settings": {
     "type": "object",
     "properties": {
+      "X402_EVM_PRIVATE_KEY": {
+        "title": "Base Payer Private Key",
+        "description": "Dedicated payer key for automatic Base USDC payments",
+        "type": "string",
+        "format": "password"
+      },
+      "X402_SOLANA_PRIVATE_KEY": {
+        "title": "Solana Payer Private Key",
+        "description": "Base58 or JSON payer key for automatic Solana USDC payments",
+        "type": "string",
+        "format": "password"
+      },
+      "X402_PAYMENT_NETWORK": {
+        "title": "Payment Network",
+        "description": "Payment preference: auto, base, or solana",
+        "type": "string",
+        "default": "auto",
+        "enum": ["auto", "base", "solana"]
+      },
+      "X402_MAX_PAYMENT_USD": {
+        "title": "Maximum Payment",
+        "description": "Hard maximum payment per request in USD",
+        "type": "string",
+        "default": "1.00"
+      },
       "X402_PAYMENT_HEADER": {
         "title": "x402 Payment Header",
-        "description": "Pre-signed x402 payment header for automatic micropayments. Get one at https://x402engine.app",
+        "description": "Legacy pre-signed x402 payment header",
         "type": "string",
         "format": "password"
       }
     }
   },
-  "version": "1"
+  "version": "1.1.0"
 }

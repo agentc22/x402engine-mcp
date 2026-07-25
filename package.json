@@ -1,8 +1,8 @@
 {
   "name": "x402engine-mcp",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "type": "module",
-  "description": "MCP server connecting agents to 108 x402 pay-per-call APIs: 72 LLMs plus media, web, code, crypto, audio, travel, and IPFS",
+  "description": "Agent-friendly MCP wrapper for x402engine with automatic capped USDC payments on Base and Solana",
   "main": "./dist/index.js",
   "module": "./src/index.ts",
   "bin": {
@@ -15,6 +15,7 @@
   ],
   "scripts": {
     "build": "tsc",
+    "test": "vitest run",
     "start": "node dist/index.js",
     "dev": "tsx src/index.ts",
     "prepublishOnly": "npm run build"
@@ -23,11 +24,17 @@
     "mcp",
     "model-context-protocol",
     "x402",
+    "http-402",
     "micropayments",
+    "software-paying-software",
     "ai-agents",
+    "agent-tools",
+    "no-api-keys",
+    "no-accounts",
     "crypto",
     "usdc",
-    "api-gateway",
+    "base",
+    "solana",
     "pay-per-call"
   ],
   "mcpName": "io.github.agentc22/x402engine-mcp",
@@ -37,13 +44,26 @@
     "type": "git",
     "url": "git+https://github.com/agentc22/x402engine-mcp.git"
   },
+  "homepage": "https://x402engine.app",
+  "bugs": {
+    "url": "https://github.com/agentc22/x402engine-mcp/issues"
+  },
+  "engines": {
+    "node": ">=20.18.0"
+  },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.12.1",
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "@solana/kit": "^5.5.1",
+    "@x402/evm": "^2.19.0",
+    "@x402/fetch": "^2.19.0",
+    "@x402/svm": "^2.19.0",
+    "viem": "^2.55.8",
     "zod": "^3.24.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
     "tsx": "^4.19.0",
-    "typescript": "^5.7.0"
+    "typescript": "^5.7.0",
+    "vitest": "^4.0.18"
   }
 }

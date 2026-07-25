@@ -1,129 +1,110 @@
 # x402engine-mcp
 
-MCP server for [x402 Engine](https://x402engine.app), connecting AI agents to 108 pay-per-call APIs through the x402 protocol.
+Agent-friendly MCP server for [x402engine](https://x402engine.app). It lets agents discover and call pay-per-request APIs through HTTP 402, with automatic USDC payment on Base or Solana.
 
-The live catalog includes 72 LLMs plus image and video generation, web search and scraping, code execution, crypto and wallet data, transaction simulation, TTS and transcription, travel, and IPFS. Pay per request with USDC on Base or Solana, or USDm on MegaETH. Prices range from $0.001 to $0.70 per call.
+The live gateway covers LLMs, image and video generation, web search and scraping, code execution, crypto and wallet data, transaction simulation, audio, travel, and IPFS. This MCP exposes a curated tool set and live discovery for the full catalog.
 
 ## Quick Start
 
-### Claude Desktop
+Use a dedicated, low-balance payer wallet. The MCP signs x402 payments locally and never sends the private key to x402engine.
 
-Add to your `claude_desktop_config.json`:
+### Base
 
 ```json
 {
   "mcpServers": {
     "x402engine": {
       "command": "npx",
-      "args": ["-y", "x402engine-mcp"],
+      "args": ["-y", "x402engine-mcp@1.1.0"],
       "env": {
-        "X402_DEV_BYPASS": "your-dev-bypass-secret"
+        "X402_EVM_PRIVATE_KEY": "0xYOUR_DEDICATED_PAYER_KEY",
+        "X402_PAYMENT_NETWORK": "base",
+        "X402_MAX_PAYMENT_USD": "1.00"
       }
     }
   }
 }
 ```
 
-### Claude Code
+Fund the wallet with USDC on Base. The x402 facilitator pays transaction gas; the wallet signs an EIP-3009 USDC authorization.
 
-```bash
-claude mcp add x402engine -- npx -y x402engine-mcp
+### Solana
+
+```json
+{
+  "mcpServers": {
+    "x402engine": {
+      "command": "npx",
+      "args": ["-y", "x402engine-mcp@1.1.0"],
+      "env": {
+        "X402_SOLANA_PRIVATE_KEY": "YOUR_BASE58_OR_JSON_PRIVATE_KEY",
+        "X402_PAYMENT_NETWORK": "solana",
+        "X402_MAX_PAYMENT_USD": "1.00"
+      }
+    }
+  }
+}
 ```
 
-## Available Tools
+Fund the wallet with USDC on Solana and enough SOL for transaction fees.
 
-### LLM Inference
-| Tool | Price | Description |
-|------|-------|-------------|
-| `llm_chat` | $0.002-$0.09 | Chat completion with any supported model |
+### Discovery Without a Wallet
 
-The live catalog contains 72 models from OpenAI, Anthropic, Google, xAI, DeepSeek, Qwen, MiniMax, GLM, Mistral, Meta, Perplexity, and others. See [machine discovery](https://x402engine.app/.well-known/x402.json) for current models and prices.
+The server starts without a wallet, and free tools such as `discover_services` and `service_health` still work. Paid tools return their x402 payment requirements until a wallet is configured.
 
-### Image Generation
-| Tool | Price | Description |
-|------|-------|-------------|
-| `generate_image` | $0.015-$0.12 | AI image generation (fast/quality/text tiers) |
+```bash
+claude mcp add x402engine -- npx -y x402engine-mcp@1.1.0
+```
 
-### Code Execution
-| Tool | Price | Description |
-|------|-------|-------------|
-| `execute_code` | $0.005 | Sandboxed code execution (Python, JS, Bash, R) |
+## Payment Controls
 
-### Audio
-| Tool | Price | Description |
-|------|-------|-------------|
-| `transcribe_audio` | $0.10 | Audio-to-text transcription (Deepgram Nova-3) |
-| `tts_openai` | $0.01 | Text-to-speech (OpenAI) |
-| `tts_elevenlabs` | $0.02 | Text-to-speech (ElevenLabs) |
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `X402_EVM_PRIVATE_KEY` | unset | Dedicated payer key for Base USDC |
+| `X402_SOLANA_PRIVATE_KEY` | unset | Base58 or JSON payer key for Solana USDC |
+| `X402_PAYMENT_NETWORK` | `auto` | `auto`, `base`, or `solana` |
+| `X402_MAX_PAYMENT_USD` | `1.00` | Hard per-request spending limit |
+| `X402_BASE_URL` | production gateway | Override the gateway URL |
+| `X402_PAYMENT_HEADER` | unset | Legacy pre-signed x402 header |
+| `X402_DEV_BYPASS` | unset | Development bypass secret |
 
-### Text Embeddings
-| Tool | Price | Description |
-|------|-------|-------------|
-| `create_embeddings` | $0.001 | Text embeddings (OpenAI text-embedding-3-small) |
+In `auto` mode, Base is preferred when both keys are configured. Automatic payment only accepts the canonical USDC contracts on Base and Solana. It rejects unknown assets, unsupported networks, and amounts above the configured cap before signing.
 
-### Crypto & Market Data
-| Tool | Price | Description |
-|------|-------|-------------|
-| `get_crypto_price` | $0.001 | Current crypto prices |
-| `get_crypto_markets` | $0.002 | Top coins by market cap |
-| `get_crypto_history` | $0.003 | Historical price charts |
-| `get_trending_crypto` | $0.001 | Trending coins |
-| `search_crypto` | $0.001 | Search for coins |
+MegaETH remains available to clients that supply their own compatible payment header.
 
-### Blockchain & Wallet
-| Tool | Price | Description |
-|------|-------|-------------|
-| `get_wallet_balances` | $0.005 | Token balances for any wallet |
-| `get_wallet_transactions` | $0.005 | Transaction history |
-| `get_wallet_pnl` | $0.01 | Profit & loss analysis |
-| `get_token_prices` | $0.005 | DEX-derived token prices |
-| `get_token_metadata` | $0.002 | Token metadata |
-| `simulate_transaction` | $0.01 | Transaction simulation (Tenderly) |
+## MCP Tools
 
-### Web
-| Tool | Price | Description |
-|------|-------|-------------|
-| `web_scrape` | $0.005 | Scrape and extract web page content |
-| `web_screenshot` | $0.01 | Capture web page screenshot |
+| Category | Tools |
+|----------|-------|
+| Discovery | `discover_services`, `service_health` |
+| Image and code | `generate_image`, `execute_code` |
+| Audio | `transcribe_audio` |
+| Crypto | `get_crypto_price`, `get_crypto_markets`, `get_crypto_history`, `get_trending_crypto`, `search_crypto`, `get_crypto_categories` |
+| Wallet and token | `get_wallet_balances`, `get_wallet_transactions`, `get_wallet_pnl`, `get_token_prices`, `get_token_metadata` |
+| IPFS | `pin_to_ipfs`, `get_from_ipfs` |
+| Travel | `search_flights`, `search_locations`, `search_hotels`, `search_cheapest_dates` |
 
-### IPFS Storage
-| Tool | Price | Description |
-|------|-------|-------------|
-| `pin_to_ipfs` | $0.01 | Pin JSON to IPFS |
-| `get_from_ipfs` | $0.001 | Retrieve content from IPFS |
+Prices are included in each tool description and in live discovery. The gateway catalog can change independently of this package.
 
-### Discovery
-| Tool | Price | Description |
-|------|-------|-------------|
-| `discover_services` | Free | List all services and pricing |
+## Discovery
 
-## Environment Variables
+- Gateway discovery: [/.well-known/x402.json](https://x402-gateway-production.up.railway.app/.well-known/x402.json)
+- Agent card: [/.well-known/agent.json](https://x402-gateway-production.up.railway.app/.well-known/agent.json)
+- Endpoint manifest: [/.well-known/agent-manifest.v1.json](https://x402-gateway-production.up.railway.app/.well-known/agent-manifest.v1.json)
+- Services API: [/api/services](https://x402-gateway-production.up.railway.app/api/services)
+- Package metadata: [server.json](./server.json)
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `X402_BASE_URL` | No | Gateway URL (default: `https://x402engine.app`) |
-| `X402_DEV_BYPASS` | No | Dev bypass secret to skip payments |
-| `X402_PAYMENT_HEADER` | No | Pre-signed payment header |
+## Development
 
-## Payment Networks
-
-- **Base** (EVM) — USDC, 6 decimals, ~2s confirmation
-- **Solana** — USDC, 6 decimals, ~400ms confirmation
-- **MegaETH** (EVM) — USDm, 18 decimals, ~10ms confirmation
-
-## How It Works
-
-1. Agent calls an MCP tool (e.g., `llm_chat`)
-2. MCP server makes HTTP request to x402engine.app
-3. Gateway returns `402 Payment Required` with pricing
-4. Agent pays with crypto via the x402 protocol
-5. Gateway verifies payment on-chain and returns data
-
-For automatic payment handling, use [@x402/fetch](https://www.npmjs.com/package/@x402/fetch) in your agent code.
+```bash
+npm install
+npm test
+npm run build
+```
 
 ## Links
 
-- Gateway: [x402engine.app](https://x402engine.app)
-- Discovery: [x402engine.app/.well-known/x402.json](https://x402engine.app/.well-known/x402.json)
-- GitHub: [github.com/agentc22/x402engine-mcp](https://github.com/agentc22/x402engine-mcp)
+- Website: [x402engine.app](https://x402engine.app)
+- npm: [x402engine-mcp](https://www.npmjs.com/package/x402engine-mcp)
+- GitHub: [agentc22/x402engine-mcp](https://github.com/agentc22/x402engine-mcp)
 - Protocol: [x402.org](https://x402.org)

@@ -1,17 +1,17 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.agentc22/x402engine-mcp",
-  "description": "MCP server connecting agents to 108 x402 pay-per-call APIs: 72 LLMs plus media, web, code, crypto, audio, travel, and IPFS",
+  "description": "Agent-friendly x402engine MCP server with automatic capped USDC payments on Base and Solana.",
   "repository": {
     "url": "https://github.com/agentc22/x402engine-mcp",
     "source": "github"
   },
-  "version": "1.0.4",
+  "version": "1.1.0",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "x402engine-mcp",
-      "version": "1.0.4",
+      "version": "1.1.0",
       "transport": {
         "type": "stdio"
       },
@@ -30,11 +30,51 @@
         },
         {
           "name": "X402_PAYMENT_HEADER",
-          "description": "Pre-signed x402 payment header for automatic payment",
+          "description": "Legacy pre-signed x402 payment header",
           "isRequired": false,
           "isSecret": true
+        },
+        {
+          "name": "X402_EVM_PRIVATE_KEY",
+          "description": "Payer private key for automatic Base USDC payments",
+          "isRequired": false,
+          "isSecret": true
+        },
+        {
+          "name": "X402_SOLANA_PRIVATE_KEY",
+          "description": "Base58 or JSON payer key for automatic Solana USDC payments",
+          "isRequired": false,
+          "isSecret": true
+        },
+        {
+          "name": "X402_PAYMENT_NETWORK",
+          "description": "Payment network preference: auto, base, or solana (default: auto)",
+          "isRequired": false,
+          "isSecret": false
+        },
+        {
+          "name": "X402_MAX_PAYMENT_USD",
+          "description": "Hard maximum payment per request in USD (default: 1.00)",
+          "isRequired": false,
+          "isSecret": false
         }
+      ],
+      "runtimeHint": "Uses stdio and calls the live x402engine gateway. Configure a payer wallet for automatic x402 payment; every payment is constrained by X402_MAX_PAYMENT_USD.",
+      "keywords": [
+        "x402",
+        "micropayments",
+        "http-402",
+        "software-paying-software",
+        "agents",
+        "base",
+        "solana"
+      ],
+      "packageArguments": [
+        "-y",
+        "x402engine-mcp"
       ]
     }
-  ]
+  ],
+  "websiteUrl": "https://x402engine.app",
+  "documentationUrl": "https://github.com/agentc22/x402engine-mcp#readme"
 }

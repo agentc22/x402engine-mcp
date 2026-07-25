@@ -5,8 +5,22 @@ startCommand:
     properties:
       X402_BASE_URL:
         type: string
-        description: "Gateway URL (default: https://x402engine.app)"
-        default: "https://x402engine.app"
+        description: "Gateway URL"
+        default: "https://x402-gateway-production.up.railway.app"
+      X402_EVM_PRIVATE_KEY:
+        type: string
+        description: "Payer private key for automatic Base USDC payments"
+      X402_SOLANA_PRIVATE_KEY:
+        type: string
+        description: "Base58 or JSON payer key for automatic Solana USDC payments"
+      X402_PAYMENT_NETWORK:
+        type: string
+        description: "Payment network preference: auto, base, or solana"
+        default: "auto"
+      X402_MAX_PAYMENT_USD:
+        type: string
+        description: "Hard maximum payment per request in USD"
+        default: "1.00"
       X402_DEV_BYPASS:
         type: string
         description: "Dev bypass secret to skip payments during testing"
@@ -19,7 +33,11 @@ startCommand:
       command: 'npx',
       args: ['-y', 'x402engine-mcp'],
       env: {
-        X402_BASE_URL: config.X402_BASE_URL || 'https://x402engine.app',
+        X402_BASE_URL: config.X402_BASE_URL || 'https://x402-gateway-production.up.railway.app',
+        ...(config.X402_EVM_PRIVATE_KEY ? { X402_EVM_PRIVATE_KEY: config.X402_EVM_PRIVATE_KEY } : {}),
+        ...(config.X402_SOLANA_PRIVATE_KEY ? { X402_SOLANA_PRIVATE_KEY: config.X402_SOLANA_PRIVATE_KEY } : {}),
+        X402_PAYMENT_NETWORK: config.X402_PAYMENT_NETWORK || 'auto',
+        X402_MAX_PAYMENT_USD: config.X402_MAX_PAYMENT_USD || '1.00',
         ...(config.X402_DEV_BYPASS ? { X402_DEV_BYPASS: config.X402_DEV_BYPASS } : {}),
         ...(config.X402_PAYMENT_HEADER ? { X402_PAYMENT_HEADER: config.X402_PAYMENT_HEADER } : {})
       }
