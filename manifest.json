@@ -1,0 +1,76 @@
+{
+  "manifest_version": "0.2",
+  "name": "x402engine-mcp",
+  "display_name": "x402engine",
+  "version": "1.0.4",
+  "description": "MCP server connecting agents to 108 x402 pay-per-call APIs: 72 LLMs plus media, web, code, crypto, audio, travel, and IPFS",
+  "author": {
+    "name": "agentc22",
+    "url": "https://github.com/agentc22"
+  },
+  "server": {
+    "type": "node",
+    "entry_point": "dist/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/dist/index.js"
+      ],
+      "env": {
+        "X402_BASE_URL": "${user_config.base_url}",
+        "X402_PAYMENT_HEADER": "${user_config.payment_header}",
+        "X402_DEV_BYPASS": "${user_config.dev_bypass}"
+      }
+    }
+  },
+  "user_config": {
+    "base_url": {
+      "type": "string",
+      "title": "Gateway URL",
+      "description": "x402engine gateway URL",
+      "default": "https://x402engine.app",
+      "required": false
+    },
+    "payment_header": {
+      "type": "string",
+      "title": "x402 payment header",
+      "description": "Optional pre-signed x402 payment header",
+      "sensitive": true,
+      "required": false
+    },
+    "dev_bypass": {
+      "type": "string",
+      "title": "Development bypass",
+      "description": "Optional x402engine development bypass secret",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/agentc22/x402engine-mcp"
+  },
+  "homepage": "https://x402engine.app",
+  "documentation": "https://x402engine.app/docs",
+  "support": "https://github.com/agentc22/x402engine-mcp/issues",
+  "keywords": [
+    "x402",
+    "ai",
+    "llm",
+    "image-generation",
+    "video-generation",
+    "crypto",
+    "mcp"
+  ],
+  "compatibility": {
+    "platforms": [
+      "darwin",
+      "win32",
+      "linux"
+    ],
+    "runtimes": {
+      "node": ">=20.0.0"
+    }
+  },
+  "license": "MIT"
+}
