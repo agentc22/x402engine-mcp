@@ -1,8 +1,8 @@
 # x402engine-mcp
 
-MCP server for [x402 Engine](https://x402-gateway-production.up.railway.app) — giving AI agents access to 38 pay-per-call APIs via HTTP 402 micropayments.
+MCP server for [x402 Engine](https://x402engine.app), connecting AI agents to 108 pay-per-call APIs through the x402 protocol.
 
-Payments are made with USDC on Base, USDC on Solana, or USDm on MegaETH. Prices range from $0.001 to $0.12 per call.
+The live catalog includes 72 LLMs plus image and video generation, web search and scraping, code execution, crypto and wallet data, transaction simulation, TTS and transcription, travel, and IPFS. Pay per request with USDC on Base or Solana, or USDm on MegaETH. Prices range from $0.001 to $0.70 per call.
 
 ## Quick Start
 
@@ -37,7 +37,7 @@ claude mcp add x402engine -- npx -y x402engine-mcp
 |------|-------|-------------|
 | `llm_chat` | $0.002-$0.09 | Chat completion with any supported model |
 
-Supported models: GPT-4o ($0.04), GPT-4o Mini ($0.003), OpenAI o1 ($0.03), Claude Opus 4.6 ($0.09), Claude Sonnet 4.5 ($0.06), Claude Haiku 4.5 ($0.02), Gemini 2.5 Pro ($0.035), Gemini 2.5 Flash ($0.009), Grok 4 ($0.06), DeepSeek V3 ($0.005), DeepSeek R1 ($0.01), Llama 3.3 70B ($0.002), Mistral Large 3 ($0.006), Qwen3 235B ($0.004), Perplexity Sonar Pro ($0.06).
+The live catalog contains 72 models from OpenAI, Anthropic, Google, xAI, DeepSeek, Qwen, MiniMax, GLM, Mistral, Meta, Perplexity, and others. See [machine discovery](https://x402engine.app/.well-known/x402.json) for current models and prices.
 
 ### Image Generation
 | Tool | Price | Description |
@@ -101,7 +101,7 @@ Supported models: GPT-4o ($0.04), GPT-4o Mini ($0.003), OpenAI o1 ($0.03), Claud
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `X402_BASE_URL` | No | Gateway URL (default: `https://x402-gateway-production.up.railway.app`) |
+| `X402_BASE_URL` | No | Gateway URL (default: `https://x402engine.app`) |
 | `X402_DEV_BYPASS` | No | Dev bypass secret to skip payments |
 | `X402_PAYMENT_HEADER` | No | Pre-signed payment header |
 
@@ -123,7 +123,7 @@ For automatic payment handling, use [@x402/fetch](https://www.npmjs.com/package/
 
 ## Links
 
-- Gateway: [x402engine.app](https://x402-gateway-production.up.railway.app)
-- Discovery: [x402engine.app/.well-known/x402.json](https://x402-gateway-production.up.railway.app/.well-known/x402.json)
+- Gateway: [x402engine.app](https://x402engine.app)
+- Discovery: [x402engine.app/.well-known/x402.json](https://x402engine.app/.well-known/x402.json)
 - GitHub: [github.com/agentc22/x402engine-mcp](https://github.com/agentc22/x402engine-mcp)
 - Protocol: [x402.org](https://x402.org)

@@ -3,7 +3,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 
-const BASE_URL = process.env.X402_BASE_URL || "https://x402-gateway-production.up.railway.app";
+const BASE_URL = process.env.X402_BASE_URL || "https://x402engine.app";
 const PAYMENT_HEADER = process.env.X402_PAYMENT_HEADER || "";
 const DEV_BYPASS = process.env.X402_DEV_BYPASS || "";
 

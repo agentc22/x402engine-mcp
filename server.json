@@ -1,17 +1,17 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.agentc22/x402engine-mcp",
-  "description": "50+ pay-per-call APIs for AI agents — images, LLM, code, crypto, travel & more via x402",
+  "description": "MCP server connecting agents to 108 x402 pay-per-call APIs: 72 LLMs plus media, web, code, crypto, audio, travel, and IPFS",
   "repository": {
     "url": "https://github.com/agentc22/x402engine-mcp",
     "source": "github"
   },
-  "version": "1.0.3",
+  "version": "1.0.4",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "x402engine-mcp",
-      "version": "1.0.3",
+      "version": "1.0.4",
       "transport": {
         "type": "stdio"
       },

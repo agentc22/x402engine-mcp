@@ -2,7 +2,7 @@
   "name": "x402engine-mcp",
   "version": "1.0.4",
   "type": "module",
-  "description": "38 pay-per-call APIs for AI agents — 15 LLMs (GPT-4o, Claude, Gemini, Grok, DeepSeek, Llama, Mistral, Qwen, Perplexity), image generation, code execution, TTS, transcription, crypto data, wallet analytics, web scraping, IPFS, and more via HTTP 402 micropayments",
+  "description": "MCP server connecting agents to 108 x402 pay-per-call APIs: 72 LLMs plus media, web, code, crypto, audio, travel, and IPFS",
   "main": "./dist/index.js",
   "module": "./src/index.ts",
   "bin": {
