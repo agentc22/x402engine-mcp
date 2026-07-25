@@ -1,0 +1,14 @@
+.git/
+.github/
+.smithery/
+src/
+test/
+*.mcpb
+Dockerfile
+glama.json
+lobechat-manifest.json
+server.json
+smithery.yaml
+tsconfig.json
+dist/*.d.ts
+dist/*.map
