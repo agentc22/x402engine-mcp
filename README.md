@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/agentc22-x402engine-mcp-badge.png)](https://mseep.ai/app/agentc22-x402engine-mcp)
+
 # x402engine-mcp
 
 Agent-friendly MCP server for [x402engine](https://x402engine.app). It lets agents discover and call pay-per-request APIs through HTTP 402, with automatic USDC payment on Base or Solana.
