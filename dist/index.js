@@ -82,10 +82,10 @@ function textResult(content) {
     };
 }
 // --- Server factory ---
-function createServer() {
+export function createServer() {
     const server = new McpServer({
         name: "x402engine",
-        version: "1.1.0",
+        version: "1.1.1",
     });
     // ==================== DISCOVERY ====================
     server.tool("discover_services", "List all available x402 Engine APIs with pricing, endpoints, and payment networks. Call this first to understand what's available.", {}, async () => {

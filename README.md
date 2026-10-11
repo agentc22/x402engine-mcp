@@ -15,7 +15,7 @@ Use a dedicated, low-balance payer wallet. The MCP signs x402 payments locally a
   "mcpServers": {
     "x402engine": {
       "command": "npx",
-      "args": ["-y", "x402engine-mcp@1.1.0"],
+      "args": ["-y", "x402engine-mcp@1.1.1"],
       "env": {
         "X402_EVM_PRIVATE_KEY": "0xYOUR_DEDICATED_PAYER_KEY",
         "X402_PAYMENT_NETWORK": "base",
@@ -35,7 +35,7 @@ Fund the wallet with USDC on Base. The x402 facilitator pays transaction gas; th
   "mcpServers": {
     "x402engine": {
       "command": "npx",
-      "args": ["-y", "x402engine-mcp@1.1.0"],
+      "args": ["-y", "x402engine-mcp@1.1.1"],
       "env": {
         "X402_SOLANA_PRIVATE_KEY": "YOUR_BASE58_OR_JSON_PRIVATE_KEY",
         "X402_PAYMENT_NETWORK": "solana",
@@ -53,7 +53,7 @@ Fund the wallet with USDC on Solana and enough SOL for transaction fees.
 The server starts without a wallet, and free tools such as `discover_services` and `service_health` still work. Paid tools return their x402 payment requirements until a wallet is configured.
 
 ```bash
-claude mcp add x402engine -- npx -y x402engine-mcp@1.1.0
+claude mcp add x402engine -- npx -y x402engine-mcp@1.1.1
 ```
 
 ## Hermes Agent
@@ -64,7 +64,7 @@ Install the [x402engine skill](https://x402engine.app/docs/hermes/) and merge th
 mcp_servers:
   x402engine:
     command: npx
-    args: ["-y", "x402engine-mcp@1.1.0"]
+    args: ["-y", "x402engine-mcp@1.1.1"]
     env:
       X402_BASE_URL: "https://x402engine.app"
       X402_PAYMENT_NETWORK: "auto"

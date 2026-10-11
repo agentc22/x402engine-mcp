@@ -1,12 +1,12 @@
 {
   "name": "x402engine-mcp",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "type": "module",
   "description": "Agent-friendly MCP wrapper for x402engine with automatic capped USDC payments on Base and Solana",
   "main": "./dist/index.js",
   "module": "./src/index.ts",
   "bin": {
-    "x402engine-mcp": "dist/index.js"
+    "x402engine-mcp": "dist/cli.js"
   },
   "files": [
     "dist",

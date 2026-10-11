@@ -107,10 +107,10 @@ function textResult(content: unknown): { content: Array<{ type: "text"; text: st
 
 // --- Server factory ---
 
-function createServer(): McpServer {
+export function createServer(): McpServer {
 const server = new McpServer({
   name: "x402engine",
-  version: "1.1.0",
+  version: "1.1.1",
 });
 
 // ==================== DISCOVERY ====================
