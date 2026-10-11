@@ -56,6 +56,25 @@ The server starts without a wallet, and free tools such as `discover_services` a
 claude mcp add x402engine -- npx -y x402engine-mcp@1.1.0
 ```
 
+## Hermes Agent
+
+Install the [x402engine skill](https://x402engine.app/docs/hermes/) and merge this server into the active Hermes profile's `config.yaml`:
+
+```yaml
+mcp_servers:
+  x402engine:
+    command: npx
+    args: ["-y", "x402engine-mcp@1.1.0"]
+    env:
+      X402_BASE_URL: "https://x402engine.app"
+      X402_PAYMENT_NETWORK: "auto"
+      X402_MAX_PAYMENT_USD: "0.10"
+```
+
+Start a new session and call `discover_services` or `service_health`; both are free. Keep the network on `auto` until a wallet is configured. For Base payments, store `X402_EVM_PRIVATE_KEY` in the profile's local `.env`, add `X402_EVM_PRIVATE_KEY: "${X402_EVM_PRIVATE_KEY}"` to the server's `env`, and change the network to `base`. Never put wallet keys in chat. The cap applies per request; authorize a separate total budget for each task.
+
+[Full Hermes setup guide](https://x402engine.app/docs/hermes/) · [Installable skill](https://x402engine.app/.well-known/skills/x402engine/SKILL.md)
+
 ## Payment Controls
 
 | Variable | Default | Description |
@@ -88,10 +107,10 @@ Prices are included in each tool description and in live discovery. The gateway 
 
 ## Discovery
 
-- Gateway discovery: [/.well-known/x402.json](https://x402-gateway-production.up.railway.app/.well-known/x402.json)
-- Agent card: [/.well-known/agent.json](https://x402-gateway-production.up.railway.app/.well-known/agent.json)
-- Endpoint manifest: [/.well-known/agent-manifest.v1.json](https://x402-gateway-production.up.railway.app/.well-known/agent-manifest.v1.json)
-- Services API: [/api/services](https://x402-gateway-production.up.railway.app/api/services)
+- Gateway discovery: [/.well-known/x402.json](https://x402engine.app/.well-known/x402.json)
+- Agent card: [/.well-known/agent.json](https://x402engine.app/.well-known/agent.json)
+- Endpoint manifest: [/.well-known/agent-manifest.v1.json](https://x402engine.app/.well-known/agent-manifest.v1.json)
+- Services API: [/api/services](https://x402engine.app/api/services)
 - Package metadata: [server.json](./server.json)
 
 ## Development
